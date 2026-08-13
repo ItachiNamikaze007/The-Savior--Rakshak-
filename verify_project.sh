@@ -74,7 +74,6 @@ echo ""
 echo "5. Checking Network Layer..."
 echo "─────────────────────────────────────────"
 check_file "app/src/main/java/com/emergency/mesh/network/BLEManager.kt"
-check_file "app/src/main/java/com/emergency/mesh/network/WiFiDirectManager.kt"
 check_file "app/src/main/java/com/emergency/mesh/network/ConnectionManager.kt"
 echo ""
 

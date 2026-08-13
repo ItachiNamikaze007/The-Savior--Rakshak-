@@ -464,37 +464,36 @@ class BLEManager(private val context: Context) {
      */
     private val scanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult?) {
-            result?.let {
-                try {
-                    val device = it.device
-                    val deviceName = device.name ?: "Unknown"
-                    val deviceId = device.address
-                    
-                    Log.d(TAG, "Found device: $deviceName ($deviceId)")
-                    
-                    // Notify peer discovered
-                    val peer = MeshPeer(
-                        deviceId = deviceId,
-                        deviceName = deviceName,
-                        connectionType = MeshPeer.ConnectionType.BLUETOOTH_LE,
-                        signalStrength = it.rssi
-                    )
-                    peerCallbacks.forEach { callback -> callback(peer) }
-                    
-                    // Store device
-                    connectedDevices[deviceId] = device
+            if (result == null) return
+            try {
+                val device = result.device
+                val deviceName = try { device.name ?: "Unknown" } catch (e: SecurityException) { "Unknown" }
+                val deviceId = device.address
+                
+                Log.d(TAG, "Found device: $deviceName ($deviceId)")
+                
+                // Notify peer discovered
+                val peer = MeshPeer(
+                    deviceId = deviceId,
+                    deviceName = deviceName,
+                    connectionType = MeshPeer.ConnectionType.BLUETOOTH_LE,
+                    signalStrength = result.rssi
+                )
+                peerCallbacks.forEach { callback -> callback(peer) }
+                
+                // Store device
+                connectedDevices[deviceId] = device
 
-                    // Auto-connect GATT client if not already connected
-                    if (!gattClients.containsKey(deviceId)) {
-                        try {
-                            device.connectGatt(context, false, gattClientCallback)
-                        } catch (e: SecurityException) {
-                            Log.e(TAG, "Error auto-connecting GATT client", e)
-                        }
+                // Auto-connect GATT client if not already connected
+                if (!gattClients.containsKey(deviceId)) {
+                    try {
+                        device.connectGatt(context, false, gattClientCallback)
+                    } catch (e: SecurityException) {
+                        Log.e(TAG, "Error auto-connecting GATT client", e)
                     }
-                } catch (e: SecurityException) {
-                    Log.e(TAG, "Security exception in scan callback", e)
                 }
+            } catch (e: SecurityException) {
+                Log.e(TAG, "Security exception in scan callback", e)
             }
         }
 
@@ -508,24 +507,23 @@ class BLEManager(private val context: Context) {
      */
     private val gattServerCallback = object : BluetoothGattServerCallback() {
         override fun onConnectionStateChange(device: BluetoothDevice?, status: Int, newState: Int) {
+            if (device == null) return
             try {
-                device?.let {
-                    if (newState == BluetoothProfile.STATE_CONNECTED) {
-                        Log.d(TAG, "Device connected to GATT server: ${it.address}")
-                        connectedDevices[it.address] = it
+                if (newState == BluetoothProfile.STATE_CONNECTED) {
+                    Log.d(TAG, "Device connected to GATT server: ${device.address}")
+                    connectedDevices[device.address] = device
 
-                        val deviceName = try { it.name ?: "Unknown" } catch (e: SecurityException) { "Unknown" }
-                        val peer = MeshPeer(
-                            deviceId = it.address,
-                            deviceName = deviceName,
-                            connectionType = MeshPeer.ConnectionType.BLUETOOTH_LE
-                        )
-                        peerCallbacks.forEach { callback -> callback(peer) }
-                    } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                        Log.d(TAG, "Device disconnected from GATT server: ${it.address}")
-                        connectedDevices.remove(it.address)
-                        incomingBuffers.remove(it.address)
-                    }
+                    val deviceName = try { device.name ?: "Unknown" } catch (e: SecurityException) { "Unknown" }
+                    val peer = MeshPeer(
+                        deviceId = device.address,
+                        deviceName = deviceName,
+                        connectionType = MeshPeer.ConnectionType.BLUETOOTH_LE
+                    )
+                    peerCallbacks.forEach { callback -> callback(peer) }
+                } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
+                    Log.d(TAG, "Device disconnected from GATT server: ${device.address}")
+                    connectedDevices.remove(device.address)
+                    incomingBuffers.remove(device.address)
                 }
             } catch (e: SecurityException) {
                 Log.e(TAG, "Security exception in connection state change", e)

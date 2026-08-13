@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Name *"
+        android:textStyle="bold"
+        android:textColor="#000000"
+        android:paddingBottom="4dp" />
+
+    <EditText
+        android:id="@+id/etName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Your full name"
+        android:inputType="textPersonName"
+        android:padding="12dp"
+        android:background="#F0F0F0"
+        android:layout_marginBottom="12dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Phone Number"
+        android:textColor="#000000"
+        android:paddingBottom="4dp" />
+
+    <EditText
+        android:id="@+id/etPhone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Your phone number"
+        android:inputType="phone"
+        android:padding="12dp"
+        android:background="#F0F0F0"
+        android:layout_marginBottom="12dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Emergency Contact"
+        android:textColor="#000000"
+        android:paddingBottom="4dp" />
+
+    <EditText
+        android:id="@+id/etEmergencyContact"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Emergency contact name and number"
+        android:inputType="text"
+        android:padding="12dp"
+        android:background="#F0F0F0"
+        android:layout_marginBottom="12dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Blood Type"
+        android:textColor="#000000"
+        android:paddingBottom="4dp" />
+
+    <EditText
+        android:id="@+id/etBloodType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="e.g., A+, B-, O+"
+        android:inputType="text"
+        android:padding="12dp"
+        android:background="#F0F0F0"
+        android:layout_marginBottom="12dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Medical Information"
+        android:textColor="#000000"
+        android:paddingBottom="4dp" />
+
+    <EditText
+        android:id="@+id/etMedicalInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Allergies, conditions, medications..."
+        android:inputType="textMultiLine"
+        android:minLines="2"
+        android:maxLines="4"
+        android:padding="12dp"
+        android:background="#F0F0F0"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="* Required field"
+        android:textSize="12sp"
+        android:textColor="#666666" />
+
+</LinearLayout>

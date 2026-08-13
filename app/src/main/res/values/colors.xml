@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand colors -->
+    <color name="primary">#1565C0</color>
+    <color name="primary_dark">#0D47A1</color>
+    <color name="primary_light">#42A5F5</color>
+    
+    <!-- Emergency colors -->
+    <color name="sos_red">#D32F2F</color>
+    <color name="sos_red_dark">#B71C1C</color>
+    <color name="sos_red_light">#FFCDD2</color>
+    
+    <!-- Safe status colors -->
+    <color name="safe_green">#2E7D32</color>
+    <color name="safe_green_dark">#1B5E20</color>
+    <color name="safe_green_light">#C8E6C9</color>
+    
+    <!-- Warning colors -->
+    <color name="warning_orange">#F57C00</color>
+    <color name="warning_orange_light">#FFE0B2</color>
+    
+    <!-- Neutral colors -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="background">#F5F5F5</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_variant">#FAFAFA</color>
+    
+    <!-- Text colors -->
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#757575</color>
+    <color name="text_hint">#9E9E9E</color>
+    <color name="text_on_primary">#FFFFFF</color>
+    <color name="text_on_dark">#FFFFFF</color>
+    
+    <!-- Chat bubble colors -->
+    <color name="bubble_sent">#DCF8C6</color>
+    <color name="bubble_received">#FFFFFF</color>
+    <color name="bubble_sos">#FFCDD2</color>
+    <color name="bubble_voice">#E3F2FD</color>
+    <color name="bubble_safe">#C8E6C9</color>
+    
+    <!-- Divider and border -->
+    <color name="divider">#E0E0E0</color>
+    <color name="border">#BDBDBD</color>
+    
+    <!-- Status indicator colors -->
+    <color name="status_online">#4CAF50</color>
+    <color name="status_offline">#9E9E9E</color>
+    <color name="status_connecting">#FF9800</color>
+    
+    <!-- Navigation colors -->
+    <color name="nav_selected">#1565C0</color>
+    <color name="nav_unselected">#757575</color>
+    <color name="nav_background">#FFFFFF</color>
+    
+    <!-- Card colors -->
+    <color name="card_background">#FFFFFF</color>
+    <color name="card_background_elevated">#FAFAFA</color>
+    
+    <!-- Input colors -->
+    <color name="input_background">#F5F5F5</color>
+    <color name="input_stroke">#E0E0E0</color>
+    <color name="input_stroke_focused">#1565C0</color>
+    
+    <!-- Legacy compatibility -->
+    <color name="colorPrimary">@color/primary</color>
+    <color name="colorPrimaryDark">@color/primary_dark</color>
+    <color name="colorPrimaryVariant">@color/primary_dark</color>
+    <color name="colorOnPrimary">@color/white</color>
+    <color name="colorSecondary">@color/safe_green</color>
+    <color name="colorSecondaryVariant">@color/safe_green_dark</color>
+    <color name="colorOnSecondary">@color/white</color>
+    <color name="text_sender">@color/primary</color>
+    <color name="text_time">@color/text_hint</color>
+    <color name="text_location">@color/primary_dark</color>
+    <color name="background_chat">@color/background</color>
+    <color name="background_input">@color/surface</color>
+    <color name="background_status">@color/surface_variant</color>
+</resources>

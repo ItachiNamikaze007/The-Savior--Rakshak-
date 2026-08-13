@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="8dp"
+    android:paddingVertical="4dp">
+
+    <LinearLayout
+        android:id="@+id/bubbleContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxWidth="280dp"
+        android:orientation="vertical"
+        android:padding="12dp"
+        android:background="@drawable/bubble_received"
+        android:layout_gravity="start"
+        tools:background="@drawable/bubble_sent">
+
+        <!-- Message type indicator (SOS, Voice, etc.) -->
+        <TextView
+            android:id="@+id/tvMessageType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="@color/sos_red"
+            android:visibility="gone"
+            tools:text="🚨 EMERGENCY SOS"
+            tools:visibility="visible" />
+
+        <!-- Sender name -->
+        <TextView
+            android:id="@+id/tvSender"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_sender"
+            tools:text="John Doe" />
+
+        <!-- Message content -->
+        <TextView
+            android:id="@+id/tvContent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textSize="15sp"
+            android:textColor="@color/text_primary"
+            android:lineSpacingMultiplier="1.2"
+            tools:text="This is a message content that can span multiple lines if needed." />
+
+        <!-- Voice message indicator -->
+        <LinearLayout
+            android:id="@+id/voiceContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <ImageView
+                android:id="@+id/ivPlayPause"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@android:drawable/ic_media_play"
+                android:contentDescription="Play voice message"
+                android:background="?attr/selectableItemBackgroundBorderless" />
+
+            <TextView
+                android:id="@+id/tvVoiceDuration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:textSize="14sp"
+                android:textColor="@color/text_secondary"
+                tools:text="0:30" />
+
+        </LinearLayout>
+
+        <!-- Location (clickable to open maps) -->
+        <TextView
+            android:id="@+id/tvLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:textSize="12sp"
+            android:textColor="@color/text_location"
+            android:drawableStart="@android:drawable/ic_menu_mylocation"
+            android:drawablePadding="4dp"
+            android:background="?attr/selectableItemBackground"
+            android:padding="4dp"
+            tools:text="📍 37.7749, -122.4194" />
+
+        <!-- Time and hops info -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tvTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="11sp"
+                android:textColor="@color/text_time"
+                tools:text="14:32" />
+
+            <TextView
+                android:id="@+id/tvHops"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:textSize="11sp"
+                android:textColor="@color/text_time"
+                android:visibility="gone"
+                tools:text="• 2 hops"
+                tools:visibility="visible" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

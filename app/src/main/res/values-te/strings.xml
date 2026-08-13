@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App name -->
+    <string name="app_name">ఎమర్జెన్సీ మెష్</string>
+    
+    <!-- Navigation -->
+    <string name="nav_home">హోమ్</string>
+    <string name="nav_chat">సందేశాలు</string>
+    <string name="nav_profile">ప్రొఫైల్</string>
+    
+    <!-- Home screen -->
+    <string name="emergency_sos">ఎమర్జెన్సీ SOS</string>
+    <string name="sos_description">సమీపంలోని అన్ని పరికరాలకు ఆపద సంకేతం పంపండి</string>
+    <string name="i_am_safe">నేను క్షేమంగా ఉన్నాను</string>
+    <string name="safe_description">మీరు బాగున్నారని ఇతరులకు తెలియజేయండి</string>
+    <string name="status_safe">మీరు క్షేమంగా గుర్తించబడ్డారు</string>
+    <string name="status_not_set">మీ స్థితిని నవీకరించడానికి నొక్కండి</string>
+    <string name="peers_connected">సమీపంలో %d పరికరాలు</string>
+    <string name="no_peers">సమీపంలో పరికరాలు లేవు</string>
+    <string name="network_status">నెట్‌వర్క్ స్థితి</string>
+    <string name="high_range_mode">హై రేంజ్</string>
+    <string name="power_saving_mode">పవర్ సేవింగ్</string>
+    <string name="quick_message">త్వరిత సందేశం</string>
+    <string name="need_help">సహాయం కావాలి</string>
+    <string name="need_water">నీరు కావాలి</string>
+    <string name="need_medical">వైద్యం కావాలి</string>
+    <string name="need_shelter">ఆశ్రయం కావాలి</string>
+    
+    <!-- Chat screen -->
+    <string name="type_message">సందేశం టైప్ చేయండి…</string>
+    <string name="send">పంపు</string>
+    <string name="record_voice">వాయిస్ రికార్డ్</string>
+    <string name="stop_recording">రికార్డింగ్ ఆపు</string>
+    <string name="playing_voice">వాయిస్ సందేశం ప్లే అవుతోంది…</string>
+    <string name="no_messages">ఇంకా సందేశాలు లేవు</string>
+    <string name="messages_appear_here">సమీపంలోని పరికరాల సందేశాలు ఇక్కడ కనిపిస్తాయి</string>
+    
+    <!-- Profile screen -->
+    <string name="personal_info">వ్యక్తిగత సమాచారం</string>
+    <string name="name">పేరు</string>
+    <string name="phone">ఫోన్ నంబర్</string>
+    <string name="emergency_contact">అత్యవసర సంప్రదింపు</string>
+    <string name="blood_type">రక్త రకం</string>
+    <string name="medical_info">వైద్య సమాచారం</string>
+    <string name="settings">సెట్టింగ్‌లు</string>
+    <string name="language">భాష</string>
+    <string name="role">పాత్ర</string>
+    <string name="role_citizen">పౌరుడు</string>
+    <string name="role_official">అధికారి</string>
+    <string name="save_profile">ప్రొఫైల్ సేవ్ చేయండి</string>
+    <string name="profile_saved">ప్రొఫైల్ సేవ్ చేయబడింది</string>
+    <string name="select_language">భాషను ఎంచుకోండి</string>
+    <string name="select_role">పాత్రను ఎంచుకోండి</string>
+    
+    <!-- Status messages -->
+    <string name="sos_sent">SOS సంకేతం పంపబడింది!</string>
+    <string name="safe_status_sent">క్షేమ స్థితి ప్రసారం చేయబడింది</string>
+    <string name="message_sent">సందేశం పంపబడింది</string>
+    <string name="voice_sent">వాయిస్ సందేశం పంపబడింది</string>
+    <string name="enter_message">దయచేసి సందేశం నమోదు చేయండి</string>
+    <string name="name_required">పేరు అవసరం</string>
+    <string name="registration_complete">నమోదు పూర్తయింది</string>
+    
+    <!-- Service -->
+    <string name="notification_channel_name">మెష్ సర్వీస్</string>
+    <string name="notification_channel_description">ఎమర్జెన్సీ మెష్ నెట్‌వర్క్ సర్వీస్</string>
+    <string name="service_running">ఎమర్జెన్సీ మెష్ నడుస్తోంది</string>
+    <string name="tap_to_open">తెరవడానికి నొక్కండి</string>
+    
+    <!-- Permissions -->
+    <string name="permissions_required">మెష్ నెట్‌వర్క్ కోసం అనుమతులు అవసరం</string>
+    
+    <!-- About -->
+    <string name="about">గురించి</string>
+    <string name="version">వెర్షన్ 1.0</string>
+    <string name="about_description">నెట్‌వర్క్‌లు విఫలమైనప్పుడు అత్యవసర కమ్యూనికేషన్</string>
+</resources>

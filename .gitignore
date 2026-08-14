@@ -1,0 +1,20 @@
+# Flutter
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+build/
+
+# Android/Gradle
+.gradle/
+android/.gradle/
+android/local.properties
+
+# IDE
+.idea/
+*.iml
+
+# Nested repositories
+Local-Mesh-Communication-Node/
+Local-Mesh-Communication-Nodes/

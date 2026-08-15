@@ -73,6 +73,23 @@ class SosRepositoryImpl implements ISosRepository {
   }
 
   @override
+  Stream<List<SosRequest>> watchActiveSosRequests() async* {
+    // Emit current non-cancelled snapshot
+    yield _cache.values
+        .where((m) => m.status != SosStatus.cancelled)
+        .map((m) => m.toEntity())
+        .toList();
+
+    // Yield updated snapshot on every stream event
+    await for (final _ in _statusStreamController.stream) {
+      yield _cache.values
+          .where((m) => m.status != SosStatus.cancelled)
+          .map((m) => m.toEntity())
+          .toList();
+    }
+  }
+
+  @override
   Future<List<SosRequest>> getSosHistory() async {
     return _cache.values.map((model) => model.toEntity()).toList();
   }

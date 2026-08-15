@@ -58,26 +58,26 @@ class SosStateNotifier extends ChangeNotifier {
 
   // --- Location Actions ---
 
-  Future<void> fetchLocation({bool? overrideSimulated}) async {
+  Future<void> fetchLocation({bool forceSimulated = false}) async {
     _isLoadingLocation = true;
     _locationErrorMessage = null;
     _locationErrorCode = null;
     notifyListeners();
 
-    final useSimulated = overrideSimulated ?? _isSimulatedMode;
-
     try {
-      final loc = await _locationService.getCurrentLocation(forceSimulated: useSimulated);
+      final loc = await _locationService.getCurrentLocation(forceSimulated: forceSimulated);
       _currentLocation = loc;
       _isLoadingLocation = false;
       notifyListeners();
     } on LocationException catch (e) {
       _isLoadingLocation = false;
+      _currentLocation = null;
       _locationErrorMessage = e.message;
       _locationErrorCode = e.code;
       notifyListeners();
     } catch (e) {
       _isLoadingLocation = false;
+      _currentLocation = null;
       _locationErrorMessage = 'Failed to fetch GPS coordinates: $e';
       _locationErrorCode = LocationErrorCode.unknown;
       notifyListeners();
@@ -86,7 +86,7 @@ class SosStateNotifier extends ChangeNotifier {
 
   void toggleSimulatedMode(bool value) {
     _isSimulatedMode = value;
-    fetchLocation(overrideSimulated: value);
+    fetchLocation(forceSimulated: value);
   }
 
   Future<void> openSettings() async {
@@ -153,27 +153,40 @@ class SosStateNotifier extends ChangeNotifier {
   // --- SOS Dispatch Actions ---
 
   SosRequest createSosPayload() {
+    if (_currentLocation == null) {
+      throw const LocationException(
+        'Cannot dispatch SOS: GPS fix unavailable. Please acquire real GPS coordinates first.',
+        code: LocationErrorCode.unknown,
+      );
+    }
+
     final now = DateTime.now();
     final generatedId = IdGenerator.generateSosId(timestamp: now);
-    final lat = _currentLocation?.latitude ?? 0.0;
-    final lng = _currentLocation?.longitude ?? 0.0;
-    final accuracy = _currentLocation?.accuracy ?? 0.0;
 
     return SosRequest(
       sosId: generatedId,
       timestamp: now,
-      latitude: lat,
-      longitude: lng,
-      accuracy: accuracy,
+      latitude: _currentLocation!.latitude,
+      longitude: _currentLocation!.longitude,
+      accuracy: _currentLocation!.accuracy,
       emergencyType: _selectedEmergencyType,
       peopleCount: _peopleCount,
       injuredCount: _injuredCount,
       status: SosStatus.pending,
-      isSimulatedGps: _currentLocation?.isSimulated ?? _isSimulatedMode,
+      isSimulatedGps: _currentLocation!.isSimulated,
     );
   }
 
   Future<SosRequest> dispatchDistressSignal() async {
+    if (_currentLocation == null) {
+      _dispatchErrorMessage = 'GPS coordinates unavailable. Acquire GPS fix before dispatch.';
+      notifyListeners();
+      throw const LocationException(
+        'Cannot dispatch SOS: GPS coordinates unavailable.',
+        code: LocationErrorCode.unknown,
+      );
+    }
+
     _isDispatching = true;
     _dispatchErrorMessage = null;
     notifyListeners();

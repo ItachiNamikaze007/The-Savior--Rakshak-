@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "190387016957",
+    "project_id": "sosquad-rakshak-net-6e68a",
+    "storage_bucket": "sosquad-rakshak-net-6e68a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:190387016957:android:663035933b77faea2a5a94",
+        "android_client_info": {
+          "package_name": "com.sosquad.rakshaknet"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxjHACzc65sTpxqlZGawYuXeuYsIJqXQo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

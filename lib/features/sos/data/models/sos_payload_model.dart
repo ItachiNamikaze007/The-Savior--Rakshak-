@@ -12,6 +12,7 @@ class SosPayloadModel {
   final int peopleCount;
   final int injuredCount;
   final SosStatus status;
+  final String deviceId;
   final bool isSimulatedGps;
 
   const SosPayloadModel({
@@ -24,6 +25,7 @@ class SosPayloadModel {
     required this.peopleCount,
     required this.injuredCount,
     this.status = SosStatus.pending,
+    this.deviceId = 'NODE-AND-01',
     this.isSimulatedGps = false,
   });
 
@@ -39,6 +41,7 @@ class SosPayloadModel {
       peopleCount: entity.peopleCount,
       injuredCount: entity.injuredCount,
       status: entity.status,
+      deviceId: entity.deviceId,
       isSimulatedGps: entity.isSimulatedGps,
     );
   }
@@ -55,33 +58,57 @@ class SosPayloadModel {
       peopleCount: peopleCount,
       injuredCount: injuredCount,
       status: status,
+      deviceId: deviceId,
       isSimulatedGps: isSimulatedGps,
     );
   }
 
-  /// Deserializes from JSON Map (ready for backend / REST / Firebase in Phase 2)
+  /// Helper to safely parse timestamp from Firestore Timestamp, String, or epoch int
+  static DateTime _parseTimestamp(dynamic val) {
+    if (val == null) return DateTime.now();
+    if (val is DateTime) return val;
+    if (val is String) return DateTime.tryParse(val) ?? DateTime.now();
+    if (val is int) return DateTime.fromMillisecondsSinceEpoch(val);
+    try {
+      // Handles Cloud Firestore Timestamp without direct compile-time coupling
+      return (val as dynamic).toDate() as DateTime;
+    } catch (_) {
+      return DateTime.now();
+    }
+  }
+
+  /// Deserializes from JSON Map (supports both camelCase and snake_case keys)
   factory SosPayloadModel.fromJson(Map<String, dynamic> json) {
     return SosPayloadModel(
-      sosId: json['sos_id'] as String? ?? json['sosId'] as String? ?? '',
-      timestamp: json['timestamp'] != null
-          ? DateTime.parse(json['timestamp'] as String)
-          : DateTime.now(),
+      sosId: json['sosId'] as String? ?? json['sos_id'] as String? ?? '',
+      timestamp: _parseTimestamp(json['timestamp']),
       latitude: (json['latitude'] as num?)?.toDouble() ?? 0.0,
       longitude: (json['longitude'] as num?)?.toDouble() ?? 0.0,
       accuracy: (json['accuracy'] as num?)?.toDouble() ?? 0.0,
-      emergencyType: json['emergency_type'] != null
-          ? EmergencyType.fromString(json['emergency_type'] as String)
-          : EmergencyType.fromString(json['emergencyType'] as String? ?? 'other'),
-      peopleCount: (json['people_count'] as num?)?.toInt() ?? (json['peopleCount'] as num?)?.toInt() ?? 1,
-      injuredCount: (json['injured_count'] as num?)?.toInt() ?? (json['injuredCount'] as num?)?.toInt() ?? 0,
+      emergencyType: json['emergencyType'] != null
+          ? EmergencyType.fromString(json['emergencyType'] as String)
+          : (json['emergency_type'] != null
+              ? EmergencyType.fromString(json['emergency_type'] as String)
+              : EmergencyType.other),
+      peopleCount: (json['peopleCount'] as num?)?.toInt() ??
+          (json['people_count'] as num?)?.toInt() ??
+          1,
+      injuredCount: (json['injuredCount'] as num?)?.toInt() ??
+          (json['injured_count'] as num?)?.toInt() ??
+          0,
       status: json['status'] != null
           ? SosStatus.fromString(json['status'] as String)
           : SosStatus.pending,
-      isSimulatedGps: json['is_simulated_gps'] as bool? ?? json['isSimulatedGps'] as bool? ?? false,
+      deviceId: json['deviceId'] as String? ??
+          json['device_id'] as String? ??
+          'NODE-AND-01',
+      isSimulatedGps: json['isSimulatedGps'] as bool? ??
+          json['is_simulated_gps'] as bool? ??
+          false,
     );
   }
 
-  /// Serializes to JSON Map
+  /// Serializes to standard JSON Map
   Map<String, dynamic> toJson() {
     return {
       'sos_id': sosId,
@@ -93,7 +120,25 @@ class SosPayloadModel {
       'people_count': peopleCount,
       'injured_count': injuredCount,
       'status': status.name,
+      'device_id': deviceId,
       'is_simulated_gps': isSimulatedGps,
+    };
+  }
+
+  /// Serializes specifically for Cloud Firestore sos_requests documents
+  Map<String, dynamic> toFirestoreJson() {
+    return {
+      'sosId': sosId,
+      'timestamp': timestamp.toIso8601String(),
+      'latitude': latitude,
+      'longitude': longitude,
+      'accuracy': accuracy,
+      'emergencyType': emergencyType.name,
+      'peopleCount': peopleCount,
+      'injuredCount': injuredCount,
+      'status': status.name,
+      'deviceId': deviceId,
+      'isSimulatedGps': isSimulatedGps,
     };
   }
 
@@ -107,6 +152,7 @@ class SosPayloadModel {
     int? peopleCount,
     int? injuredCount,
     SosStatus? status,
+    String? deviceId,
     bool? isSimulatedGps,
   }) {
     return SosPayloadModel(
@@ -119,6 +165,7 @@ class SosPayloadModel {
       peopleCount: peopleCount ?? this.peopleCount,
       injuredCount: injuredCount ?? this.injuredCount,
       status: status ?? this.status,
+      deviceId: deviceId ?? this.deviceId,
       isSimulatedGps: isSimulatedGps ?? this.isSimulatedGps,
     );
   }

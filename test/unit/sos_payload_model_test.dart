@@ -28,10 +28,11 @@ void main() {
       peopleCount: 6,
       injuredCount: 2,
       status: SosStatus.pending,
+      deviceId: 'NODE-AND-01',
       isSimulatedGps: false,
     );
 
-    test('toJson serializes all required 8 SOS fields correctly', () {
+    test('toJson serializes all required SOS fields correctly', () {
       final model = SosPayloadModel.fromEntity(sampleEntity);
       final json = model.toJson();
 
@@ -43,21 +44,40 @@ void main() {
       expect(json['people_count'], equals(6));
       expect(json['injured_count'], equals(2));
       expect(json['status'], equals('pending'));
+      expect(json['device_id'], equals('NODE-AND-01'));
       expect(json['is_simulated_gps'], isFalse);
     });
 
-    test('fromJson deserializes json payload back into model', () {
+    test('toFirestoreJson serializes all 10 Cloud Firestore fields with camelCase keys', () {
+      final model = SosPayloadModel.fromEntity(sampleEntity);
+      final firestoreJson = model.toFirestoreJson();
+
+      expect(firestoreJson['sosId'], equals('RAK-20260814-99AA'));
+      expect(firestoreJson['timestamp'], equals(fixedTime.toIso8601String()));
+      expect(firestoreJson['latitude'], equals(28.6139));
+      expect(firestoreJson['longitude'], equals(77.2090));
+      expect(firestoreJson['accuracy'], equals(4.5));
+      expect(firestoreJson['emergencyType'], equals('flood'));
+      expect(firestoreJson['peopleCount'], equals(6));
+      expect(firestoreJson['injuredCount'], equals(2));
+      expect(firestoreJson['status'], equals('pending'));
+      expect(firestoreJson['deviceId'], equals('NODE-AND-01'));
+      expect(firestoreJson['isSimulatedGps'], isFalse);
+    });
+
+    test('fromJson deserializes json payload with camelCase back into model', () {
       final Map<String, dynamic> json = {
-        'sos_id': 'RAK-20260814-B1C2',
+        'sosId': 'RAK-20260814-B1C2',
         'timestamp': fixedTime.toIso8601String(),
         'latitude': 19.0760,
         'longitude': 72.8777,
         'accuracy': 3.2,
-        'emergency_type': 'fire',
-        'people_count': 12,
-        'injured_count': 4,
+        'emergencyType': 'fire',
+        'peopleCount': 12,
+        'injuredCount': 4,
         'status': 'transmitting',
-        'is_simulated_gps': true,
+        'deviceId': 'NODE-TEST-02',
+        'isSimulatedGps': true,
       };
 
       final model = SosPayloadModel.fromJson(json);
@@ -69,6 +89,7 @@ void main() {
       expect(model.peopleCount, equals(12));
       expect(model.injuredCount, equals(4));
       expect(model.status, equals(SosStatus.transmitting));
+      expect(model.deviceId, equals('NODE-TEST-02'));
       expect(model.isSimulatedGps, isTrue);
     });
 
@@ -80,6 +101,7 @@ void main() {
       expect(entity.emergencyType, equals(sampleEntity.emergencyType));
       expect(entity.peopleCount, equals(sampleEntity.peopleCount));
       expect(entity.injuredCount, equals(sampleEntity.injuredCount));
+      expect(entity.deviceId, equals(sampleEntity.deviceId));
       expect(entity, equals(sampleEntity));
     });
   });

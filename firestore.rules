@@ -1,0 +1,37 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Emergency SOS distress requests collection
+    match /sos_requests/{sosId} {
+      // Allow reading distress signals for active crisis response & responder dashboard
+      allow read: if true;
+
+      // Allow creating an SOS distress signal with strict schema validation
+      allow create: if request.resource.data.keys().hasAll([
+                        'sosId', 'timestamp', 'latitude', 'longitude',
+                        'emergencyType', 'peopleCount', 'injuredCount', 'status'
+                      ])
+                    && request.resource.data.sosId is string
+                    && request.resource.data.sosId.size() > 0
+                    && request.resource.data.latitude is number
+                    && request.resource.data.longitude is number
+                    && request.resource.data.peopleCount is int
+                    && request.resource.data.injuredCount is int
+                    && request.resource.data.emergencyType is string
+                    && request.resource.data.status is string;
+
+      // Allow status transitions and telemetry updates on active distress signals
+      allow update: if request.resource.data.sosId == resource.data.sosId;
+
+      // Prevent unauthorized deletion of critical audit logs in emergency scenarios
+      allow delete: if false;
+    }
+
+    // Default deny all other collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

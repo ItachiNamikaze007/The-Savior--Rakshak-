@@ -1,16 +1,28 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'core/constants/app_strings.dart';
 import 'core/constants/app_theme.dart';
 import 'core/services/location_service.dart';
+import 'features/sos/data/repositories/firestore_sos_repository_impl.dart';
 import 'features/sos/data/repositories/sos_repository_impl.dart';
 import 'features/sos/domain/repositories/i_sos_repository.dart';
 import 'features/sos/presentation/providers/sos_state_notifier.dart';
 import 'features/sos/presentation/screens/home_sos_screen.dart';
+import 'firebase_options.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase Core with generated FlutterFire configuration
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    debugPrint('Firebase initialization note: $e');
+  }
 
   // Set immersive dark status bar style
   SystemChrome.setSystemUIOverlayStyle(
@@ -26,7 +38,9 @@ void main() {
 }
 
 class SoSquadApp extends StatelessWidget {
-  const SoSquadApp({super.key});
+  final ISosRepository? repository;
+
+  const SoSquadApp({super.key, this.repository});
 
   @override
   Widget build(BuildContext context) {
@@ -37,9 +51,9 @@ class SoSquadApp extends StatelessWidget {
           create: (_) => LocationService(),
         ),
 
-        // Repositories (Interface bound to mock implementation for Phase 1)
+        // Repositories (Cloud Firestore for Phase 2, with customizable injection)
         Provider<ISosRepository>(
-          create: (_) => SosRepositoryImpl(),
+          create: (_) => repository ?? FirestoreSosRepositoryImpl(),
           dispose: (_, repo) {
             if (repo is SosRepositoryImpl) {
               repo.dispose();
@@ -64,3 +78,4 @@ class SoSquadApp extends StatelessWidget {
     );
   }
 }
+

@@ -27,17 +27,18 @@ class HomeSosScreen extends StatelessWidget {
       return;
     }
 
-    if (!notifier.hasLocation && !notifier.isSimulatedMode) {
+    if (!notifier.hasLocation) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: AppColors.statusError,
-          content: const Text(
-            'GPS coordinates unavailable. Please enable GPS or switch to Simulated Mode for testing.',
+          content: Text(
+            notifier.locationErrorMessage ??
+                'GPS coordinates unavailable. Please enable GPS and acquire a location fix to dispatch SOS.',
           ),
           action: SnackBarAction(
-            label: 'SIMULATE',
+            label: 'RETRY',
             textColor: Colors.white,
-            onPressed: () => notifier.toggleSimulatedMode(true),
+            onPressed: () => notifier.fetchLocation(),
           ),
           duration: const Duration(seconds: 4),
         ),

@@ -13,6 +13,9 @@ abstract class ISosRepository {
   /// Real-time stream of status updates for a specific SOS request.
   Stream<SosRequest> watchSosStatus(String sosId);
 
+  /// Real-time stream of all active SOS requests (for HQ dashboards / responders).
+  Stream<List<SosRequest>> watchActiveSosRequests();
+
   /// Retrieves previously dispatched SOS history.
   Future<List<SosRequest>> getSosHistory();
 }

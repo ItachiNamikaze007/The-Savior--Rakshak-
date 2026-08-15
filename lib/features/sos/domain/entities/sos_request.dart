@@ -11,6 +11,7 @@ class SosRequest {
   final int peopleCount;
   final int injuredCount;
   final SosStatus status;
+  final String deviceId;
   final bool isSimulatedGps;
 
   const SosRequest({
@@ -23,6 +24,7 @@ class SosRequest {
     required this.peopleCount,
     required this.injuredCount,
     this.status = SosStatus.pending,
+    this.deviceId = 'NODE-AND-01',
     this.isSimulatedGps = false,
   });
 
@@ -36,6 +38,7 @@ class SosRequest {
     int? peopleCount,
     int? injuredCount,
     SosStatus? status,
+    String? deviceId,
     bool? isSimulatedGps,
   }) {
     return SosRequest(
@@ -48,6 +51,7 @@ class SosRequest {
       peopleCount: peopleCount ?? this.peopleCount,
       injuredCount: injuredCount ?? this.injuredCount,
       status: status ?? this.status,
+      deviceId: deviceId ?? this.deviceId,
       isSimulatedGps: isSimulatedGps ?? this.isSimulatedGps,
     );
   }
@@ -64,7 +68,8 @@ class SosRequest {
           emergencyType == other.emergencyType &&
           peopleCount == other.peopleCount &&
           injuredCount == other.injuredCount &&
-          status == other.status;
+          status == other.status &&
+          deviceId == other.deviceId;
 
   @override
   int get hashCode =>
@@ -75,5 +80,6 @@ class SosRequest {
       emergencyType.hashCode ^
       peopleCount.hashCode ^
       injuredCount.hashCode ^
-      status.hashCode;
+      status.hashCode ^
+      deviceId.hashCode;
 }

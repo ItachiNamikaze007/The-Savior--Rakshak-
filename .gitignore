@@ -17,6 +17,8 @@
 *credentials*.json
 *serviceAccount*.json
 *service_account*.json
+new_api_key.txt
+*api_key*.txt
 
 # Android Keystore & Signing Configs
 *.jks

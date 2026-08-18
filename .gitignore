@@ -20,6 +20,13 @@
 new_api_key.txt
 *api_key*.txt
 
+# Firebase & Google Services Credentials
+*google-services.json
+!google-services.json.example
+!*google-services.json.example
+lib/firebase_options.dart
+!lib/firebase_options.dart.example
+
 # Android Keystore & Signing Configs
 *.jks
 *.keystore

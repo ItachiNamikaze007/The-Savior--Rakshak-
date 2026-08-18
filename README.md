@@ -70,11 +70,14 @@ d:\SoSquad\
    ```bash
    flutter pub get
    ```
-3. Run test suite:
+3. Setup Firebase (Optional / Backend Sync):
+   - Copy `android/app/google-services.json.example` to `android/app/google-services.json` and insert your Firebase credentials.
+   - Copy `lib/firebase_options.dart.example` to `lib/firebase_options.dart` (or run `flutterfire configure`).
+4. Run test suite:
    ```bash
    flutter test
    ```
-4. Run on Android device / emulator:
+5. Run on Android device / emulator:
    ```bash
    flutter run
    ```

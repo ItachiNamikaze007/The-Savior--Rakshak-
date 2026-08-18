@@ -8,7 +8,7 @@ void main() {
   late SosRepositoryImpl repository;
 
   setUp(() {
-    repository = SosRepositoryImpl();
+    repository = SosRepositoryImpl(simulationDelay: const Duration(milliseconds: 20));
   });
 
   tearDown(() {
@@ -27,14 +27,13 @@ void main() {
       status: SosStatus.pending,
     );
 
-    // Listens for stream updates
     final statusEvents = <SosStatus>[];
     final sub = repository.watchSosStatus('RAK-TEST-001').listen((req) {
       statusEvents.add(req.status);
     });
 
     final result = await repository.dispatchSos(request);
-    await pumpEventQueue();
+    await Future.delayed(const Duration(milliseconds: 50));
 
     expect(result.status, equals(SosStatus.acknowledged));
     expect(statusEvents, contains(SosStatus.transmitting));
@@ -80,21 +79,17 @@ void main() {
       status: SosStatus.pending,
     );
 
-    final activeLists = <List<SosRequest>>[];
-    final sub = repository.watchActiveSosRequests().listen((list) {
-      activeLists.add(list);
-    });
+    final streamFuture = repository.watchActiveSosRequests().firstWhere(
+          (list) => list.any((r) => r.sosId == 'RAK-TEST-003'),
+        );
 
     await repository.dispatchSos(request1);
-    await pumpEventQueue();
+    final activeList = await streamFuture;
 
-    expect(activeLists.isNotEmpty, isTrue);
-    expect(activeLists.last.any((r) => r.sosId == 'RAK-TEST-003'), isTrue);
+    expect(activeList.any((r) => r.sosId == 'RAK-TEST-003'), isTrue);
 
     final history = await repository.getSosHistory();
     expect(history.length, equals(1));
     expect(history.first.sosId, equals('RAK-TEST-003'));
-
-    await sub.cancel();
   });
 }

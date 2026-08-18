@@ -7,6 +7,8 @@ class LocationData {
   final double longitude;
   final double accuracy;
   final double altitude;
+  final double speed;
+  final double heading;
   final DateTime timestamp;
   final bool isSimulated;
 
@@ -15,6 +17,8 @@ class LocationData {
     required this.longitude,
     required this.accuracy,
     this.altitude = 0.0,
+    this.speed = 0.0,
+    this.heading = 0.0,
     required this.timestamp,
     this.isSimulated = false,
   });
@@ -24,6 +28,8 @@ class LocationData {
     double? longitude,
     double? accuracy,
     double? altitude,
+    double? speed,
+    double? heading,
     DateTime? timestamp,
     bool? isSimulated,
   }) {
@@ -32,6 +38,8 @@ class LocationData {
       longitude: longitude ?? this.longitude,
       accuracy: accuracy ?? this.accuracy,
       altitude: altitude ?? this.altitude,
+      speed: speed ?? this.speed,
+      heading: heading ?? this.heading,
       timestamp: timestamp ?? this.timestamp,
       isSimulated: isSimulated ?? this.isSimulated,
     );
@@ -45,6 +53,7 @@ class LocationService {
     longitude: 77.2090,
     accuracy: 4.8,
     altitude: 216.0,
+    heading: 0.0,
     timestamp: DateTime.fromMillisecondsSinceEpoch(0),
     isSimulated: true,
   );
@@ -58,6 +67,7 @@ class LocationService {
         longitude: 77.2090 + (DateTime.now().second % 50) * 0.0001,
         accuracy: 4.5,
         altitude: 216.0,
+        heading: 0.0,
         timestamp: DateTime.now(),
         isSimulated: true,
       );
@@ -103,6 +113,8 @@ class LocationService {
         longitude: position.longitude,
         accuracy: position.accuracy,
         altitude: position.altitude,
+        speed: position.speed,
+        heading: position.heading,
         timestamp: position.timestamp,
         isSimulated: position.isMocked,
       );
@@ -115,6 +127,8 @@ class LocationService {
           longitude: lastKnown.longitude,
           accuracy: lastKnown.accuracy,
           altitude: lastKnown.altitude,
+          speed: lastKnown.speed,
+          heading: lastKnown.heading,
           timestamp: lastKnown.timestamp,
           isSimulated: lastKnown.isMocked,
         );
@@ -129,6 +143,30 @@ class LocationService {
         code: LocationErrorCode.unknown,
       );
     }
+  }
+
+  /// Provides a real-time stream of live GPS location updates as the user moves.
+  Stream<LocationData> getPositionStream({
+    LocationAccuracy accuracy = LocationAccuracy.high,
+    int distanceFilter = 2,
+  }) {
+    const locationSettings = LocationSettings(
+      accuracy: LocationAccuracy.high,
+      distanceFilter: 2,
+    );
+
+    return Geolocator.getPositionStream(locationSettings: locationSettings).map(
+      (pos) => LocationData(
+        latitude: pos.latitude,
+        longitude: pos.longitude,
+        accuracy: pos.accuracy,
+        altitude: pos.altitude,
+        speed: pos.speed,
+        heading: pos.heading,
+        timestamp: pos.timestamp,
+        isSimulated: pos.isMocked,
+      ),
+    );
   }
 
   /// Opens the app settings page so user can grant location permissions.

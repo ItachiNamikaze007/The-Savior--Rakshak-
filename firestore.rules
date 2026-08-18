@@ -23,7 +23,12 @@ service cloud.firestore {
                     && request.resource.data.status is string;
 
       // Allow status transitions and telemetry updates on active distress signals
-      allow update: if request.resource.data.sosId == resource.data.sosId;
+      allow update: if request.resource.data.sosId == resource.data.sosId
+                    && request.resource.data.latitude is number
+                    && request.resource.data.longitude is number
+                    && request.resource.data.peopleCount is int
+                    && request.resource.data.injuredCount is int
+                    && request.resource.data.status is string;
 
       // Prevent unauthorized deletion of critical audit logs in emergency scenarios
       allow delete: if false;

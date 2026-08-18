@@ -17,6 +17,8 @@ dependencies:
   google_fonts: ^6.2.1
   firebase_core: ^4.13.0
   cloud_firestore: ^6.8.0
+  flutter_map: ^8.3.1
+  latlong2: ^0.10.1
 
 dev_dependencies:
   flutter_test:

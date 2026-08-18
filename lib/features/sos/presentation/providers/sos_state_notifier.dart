@@ -152,7 +152,11 @@ class SosStateNotifier extends ChangeNotifier {
 
   // --- SOS Dispatch Actions ---
 
-  SosRequest createSosPayload() {
+  SosRequest createSosPayload({
+    EmergencyType? emergencyType,
+    int? people,
+    int? injured,
+  }) {
     if (_currentLocation == null) {
       throw const LocationException(
         'Cannot dispatch SOS: GPS fix unavailable. Please acquire real GPS coordinates first.',
@@ -169,15 +173,45 @@ class SosStateNotifier extends ChangeNotifier {
       latitude: _currentLocation!.latitude,
       longitude: _currentLocation!.longitude,
       accuracy: _currentLocation!.accuracy,
-      emergencyType: _selectedEmergencyType,
-      peopleCount: _peopleCount,
-      injuredCount: _injuredCount,
+      emergencyType: emergencyType ?? _selectedEmergencyType,
+      peopleCount: people ?? _peopleCount,
+      injuredCount: injured ?? _injuredCount,
       status: SosStatus.pending,
       isSimulatedGps: _currentLocation!.isSimulated,
     );
   }
 
-  Future<SosRequest> dispatchDistressSignal() async {
+  /// STRICT SOS: Instant alert with 3-second hold. No questions asked.
+  /// Automatically attaches user/device ID, current GPS lat/long, accuracy, timestamp.
+  Future<SosRequest> dispatchStrictSos() async {
+    return dispatchDistressSignal(
+      customEmergencyType: EmergencyType.other,
+      customPeopleCount: 1,
+      customInjuredCount: 0,
+    );
+  }
+
+  /// DETAILED SOS: Sends SOS with specific emergency category, people count, and injured count.
+  Future<SosRequest> dispatchDetailedSos({
+    required EmergencyType type,
+    required int people,
+    required int injured,
+  }) async {
+    _selectedEmergencyType = type;
+    _peopleCount = people;
+    _injuredCount = injured;
+    return dispatchDistressSignal(
+      customEmergencyType: type,
+      customPeopleCount: people,
+      customInjuredCount: injured,
+    );
+  }
+
+  Future<SosRequest> dispatchDistressSignal({
+    EmergencyType? customEmergencyType,
+    int? customPeopleCount,
+    int? customInjuredCount,
+  }) async {
     if (_currentLocation == null) {
       _dispatchErrorMessage = 'GPS coordinates unavailable. Acquire GPS fix before dispatch.';
       notifyListeners();
@@ -192,7 +226,11 @@ class SosStateNotifier extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final payload = createSosPayload();
+      final payload = createSosPayload(
+        emergencyType: customEmergencyType,
+        people: customPeopleCount,
+        injured: customInjuredCount,
+      );
       _activeSos = payload;
 
       // Subscribe to real-time status updates from repository
@@ -208,10 +246,12 @@ class SosStateNotifier extends ChangeNotifier {
       notifyListeners();
       return dispatched;
     } catch (e) {
+      debugPrint('SOS dispatch network notice: $e');
       _isDispatching = false;
-      _dispatchErrorMessage = 'Failed to transmit distress signal: $e';
+      // Set to transmitting state locally so distress signal remains active on device
+      _activeSos = _activeSos?.copyWith(status: SosStatus.transmitting);
       notifyListeners();
-      rethrow;
+      return _activeSos!;
     }
   }
 

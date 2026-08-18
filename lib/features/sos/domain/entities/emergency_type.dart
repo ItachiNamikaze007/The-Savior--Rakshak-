@@ -6,6 +6,7 @@ enum EmergencyType {
   flood,
   fire,
   earthquake,
+  accident,
   other;
 
   String get displayName {
@@ -18,6 +19,8 @@ enum EmergencyType {
         return 'Fire';
       case EmergencyType.earthquake:
         return 'Earthquake';
+      case EmergencyType.accident:
+        return 'Accident';
       case EmergencyType.other:
         return 'Other';
     }
@@ -33,6 +36,8 @@ enum EmergencyType {
         return 'FIR';
       case EmergencyType.earthquake:
         return 'EQK';
+      case EmergencyType.accident:
+        return 'ACC';
       case EmergencyType.other:
         return 'OTH';
     }
@@ -48,6 +53,8 @@ enum EmergencyType {
         return Icons.local_fire_department_rounded;
       case EmergencyType.earthquake:
         return Icons.broken_image_rounded;
+      case EmergencyType.accident:
+        return Icons.car_crash_rounded;
       case EmergencyType.other:
         return Icons.warning_amber_rounded;
     }
@@ -63,6 +70,8 @@ enum EmergencyType {
         return AppColors.disasterFire;
       case EmergencyType.earthquake:
         return AppColors.disasterEarthquake;
+      case EmergencyType.accident:
+        return AppColors.disasterAccident;
       case EmergencyType.other:
         return AppColors.disasterOther;
     }
@@ -82,6 +91,9 @@ enum EmergencyType {
       case 'earthquake':
       case 'eqk':
         return EmergencyType.earthquake;
+      case 'accident':
+      case 'acc':
+        return EmergencyType.accident;
       default:
         return EmergencyType.other;
     }

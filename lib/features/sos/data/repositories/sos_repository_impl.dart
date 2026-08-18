@@ -8,6 +8,10 @@ class SosRepositoryImpl implements ISosRepository {
   // In-memory persistent cache for Phase 1 MVP
   final Map<String, SosPayloadModel> _cache = {};
 
+  final Duration simulationDelay;
+
+  SosRepositoryImpl({this.simulationDelay = const Duration(milliseconds: 100)});
+
   // Broadcast stream for real-time status updates
   final StreamController<SosRequest> _statusStreamController =
       StreamController<SosRequest>.broadcast();
@@ -22,7 +26,9 @@ class SosRepositoryImpl implements ISosRepository {
     _statusStreamController.add(transmittingModel.toEntity());
 
     // 2. Simulate network latency & Command Center ACK handshake
-    await Future.delayed(const Duration(milliseconds: 2200));
+    if (simulationDelay > Duration.zero) {
+      await Future.delayed(simulationDelay);
+    }
 
     // If request was cancelled during transmission delay, do not overwrite with acknowledged
     if (_cache[request.sosId]?.status == SosStatus.cancelled) {
@@ -60,6 +66,16 @@ class SosRepositoryImpl implements ISosRepository {
   }
 
   @override
+  Future<void> updateSosStatus(String sosId, SosStatus newStatus) async {
+    final existing = _cache[sosId];
+    if (existing != null) {
+      final updated = existing.copyWith(status: newStatus);
+      _cache[sosId] = updated;
+      _statusStreamController.add(updated.toEntity());
+    }
+  }
+
+  @override
   Stream<SosRequest> watchSosStatus(String sosId) async* {
     // Emit initial status if present
     final current = _cache[sosId];
@@ -86,6 +102,34 @@ class SosRepositoryImpl implements ISosRepository {
           .where((m) => m.status != SosStatus.cancelled)
           .map((m) => m.toEntity())
           .toList();
+    }
+  }
+
+  @override
+  Stream<List<SosRequest>> watchAllSosRequests() async* {
+    // Emit current snapshot
+    yield _cache.values.map((m) => m.toEntity()).toList();
+
+    // Yield updated snapshot on every stream event
+    await for (final _ in _statusStreamController.stream) {
+      yield _cache.values.map((m) => m.toEntity()).toList();
+    }
+  }
+
+  @override
+  Stream<List<SosRequest>> watchUserSosRequests(String deviceId) async* {
+    yield _cache.values
+        .where((m) => m.deviceId == deviceId)
+        .map((m) => m.toEntity())
+        .toList()
+      ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+
+    await for (final _ in _statusStreamController.stream) {
+      yield _cache.values
+          .where((m) => m.deviceId == deviceId)
+          .map((m) => m.toEntity())
+          .toList()
+        ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
     }
   }
 

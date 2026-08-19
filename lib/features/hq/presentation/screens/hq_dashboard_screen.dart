@@ -104,27 +104,40 @@ class _HqDashboardContentState extends State<_HqDashboardContent> {
 
             // 2. Main Command Center Operations Area
             Expanded(
-              child: Column(
-                children: [
-                  // Top Header
-                  HqHeader(notifier: notifier),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final isShortHeight = constraints.maxHeight < 780;
+                  final isVeryShort = constraints.maxHeight < 620;
+                  final panelHeight = isVeryShort
+                      ? 44.0
+                      : (isShortHeight ? 44.0 : 170.0);
 
-                  // KPI Row
-                  HqMetricsBar(notifier: notifier),
+                  return Column(
+                    children: [
+                      // Top Header
+                      HqHeader(notifier: notifier),
 
-                  // Filter Toolstrip
-                  _buildFilterToolstrip(context, notifier),
+                      // KPI Row (collapses on short/medium screen heights to guarantee layout fit)
+                      if (!isShortHeight) HqMetricsBar(notifier: notifier),
 
-                  // 3-Pane Center Workspace (Left: Alerts Queue, Center: Tactical Map, Right: Active Incident)
-                  Expanded(
-                    child: isDesktop
-                        ? _buildDesktopLayout(context, notifier, selectedIncident)
-                        : _buildTabletLayout(context, notifier, selectedIncident),
-                  ),
+                      // Filter Toolstrip
+                      _buildFilterToolstrip(context, notifier),
 
-                  // Bottom Telemetry & Activity Panel
-                  HqBottomPanel(notifier: notifier),
-                ],
+                      // 3-Pane Center Workspace (Left: Alerts Queue, Center: Tactical Map, Right: Active Incident)
+                      Expanded(
+                        child: isDesktop
+                            ? _buildDesktopLayout(context, notifier, selectedIncident)
+                            : _buildTabletLayout(context, notifier, selectedIncident),
+                      ),
+
+                      // Bottom Telemetry & Activity Panel
+                      HqBottomPanel(
+                        notifier: notifier,
+                        height: panelHeight,
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
           ],
@@ -321,14 +334,34 @@ class _HqDashboardContentState extends State<_HqDashboardContent> {
       child: Column(
         children: [
           Container(
+            height: 36,
             color: AppColors.surface,
             child: const TabBar(
               indicatorColor: AppColors.statusStandby,
               labelColor: AppColors.statusStandby,
               unselectedLabelColor: AppColors.textMuted,
+              labelStyle: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
               tabs: [
-                Tab(icon: Icon(Icons.map_rounded, size: 18), text: 'TACTICAL MAP'),
-                Tab(icon: Icon(Icons.emergency_share_rounded, size: 18), text: 'INCIDENTS FEED'),
+                Tab(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.map_rounded, size: 14),
+                      SizedBox(width: 6),
+                      Text('TACTICAL MAP'),
+                    ],
+                  ),
+                ),
+                Tab(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.emergency_share_rounded, size: 14),
+                      SizedBox(width: 6),
+                      Text('INCIDENTS FEED'),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),

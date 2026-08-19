@@ -6,8 +6,9 @@ import '../providers/hq_dashboard_notifier.dart';
 
 class HqBottomPanel extends StatefulWidget {
   final HqDashboardNotifier notifier;
+  final double height;
 
-  const HqBottomPanel({super.key, required this.notifier});
+  const HqBottomPanel({super.key, required this.notifier, this.height = 170});
 
   @override
   State<HqBottomPanel> createState() => _HqBottomPanelState();
@@ -28,7 +29,7 @@ class _HqBottomPanelState extends State<HqBottomPanel> {
     final notifier = widget.notifier;
 
     return Container(
-      height: 170,
+      height: widget.height,
       decoration: BoxDecoration(
         color: AppColors.surface,
         border: const Border(
@@ -111,13 +112,14 @@ class _HqBottomPanelState extends State<HqBottomPanel> {
             ),
           ),
 
-          // Tab Content
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: _buildActiveTabContent(notifier),
+          // Tab Content (Shown when height is sufficient)
+          if (widget.height >= 120)
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: _buildActiveTabContent(notifier),
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -156,7 +158,7 @@ class _HqBottomPanelState extends State<HqBottomPanel> {
 
         return Container(
           width: 260,
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           decoration: BoxDecoration(
             color: AppColors.surfaceElevated,
             borderRadius: BorderRadius.circular(8),
@@ -235,7 +237,7 @@ class _HqBottomPanelState extends State<HqBottomPanel> {
 
         return Container(
           width: 240,
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           decoration: BoxDecoration(
             color: AppColors.surfaceElevated,
             borderRadius: BorderRadius.circular(8),
@@ -292,7 +294,7 @@ class _HqBottomPanelState extends State<HqBottomPanel> {
         final item = dispatched[index];
         return Container(
           width: 260,
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           decoration: BoxDecoration(
             color: AppColors.surfaceElevated,
             borderRadius: BorderRadius.circular(8),

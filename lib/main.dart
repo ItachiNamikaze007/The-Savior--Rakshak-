@@ -65,7 +65,7 @@ class SoSquadApp extends StatelessWidget {
           },
         ),
 
-        // Communication Abstraction (Internet + LoRa Mesh + Offline Queue)
+        // Communication Abstraction (Internet + BLE Mesh + LoRa + Offline Queue)
         ChangeNotifierProvider<CommunicationManager>(
           create: (ctx) => CommunicationManager(
             repository: ctx.read<ISosRepository>(),
@@ -77,6 +77,7 @@ class SoSquadApp extends StatelessWidget {
           create: (ctx) => SosStateNotifier(
             sosRepository: ctx.read<ISosRepository>(),
             locationService: ctx.read<LocationService>(),
+            communicationManager: ctx.read<CommunicationManager>(),
           ),
         ),
       ],
@@ -97,6 +98,3 @@ class SoSquadApp extends StatelessWidget {
     );
   }
 }
-
-
-

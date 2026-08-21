@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import '../errors/app_exceptions.dart';
 
@@ -54,58 +55,52 @@ class LocationService {
     accuracy: 4.8,
     altitude: 216.0,
     heading: 0.0,
-    timestamp: DateTime.fromMillisecondsSinceEpoch(0),
+    timestamp: DateTime.now(),
     isSimulated: true,
   );
 
-  /// Fetches real GPS coordinates from device hardware.
-  /// Throws [LocationException] with specific [LocationErrorCode] if permission or service is unavailable.
+  /// Fetches real GPS coordinates from device hardware, with automatic fallback for web/simulator.
   Future<LocationData> getCurrentLocation({bool forceSimulated = false}) async {
     if (forceSimulated) {
-      return LocationData(
-        latitude: 28.6139 + (DateTime.now().millisecond % 50) * 0.0001,
-        longitude: 77.2090 + (DateTime.now().second % 50) * 0.0001,
-        accuracy: 4.5,
-        altitude: 216.0,
-        heading: 0.0,
-        timestamp: DateTime.now(),
-        isSimulated: true,
-      );
+      return _generateSimulatedLocation();
     }
 
-    // 1. Verify location services hardware is enabled
-    final isServiceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!isServiceEnabled) {
-      throw const LocationException(
-        'GPS location service is disabled on this device. Please turn on Location in system settings.',
-        code: LocationErrorCode.serviceDisabled,
-      );
-    }
-
-    // 2. Verify permission status
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
+    try {
+      // 1. Verify location services hardware is enabled
+      final isServiceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!isServiceEnabled) {
+        if (kIsWeb) return _generateSimulatedLocation();
         throw const LocationException(
-          'Location permission was denied. RAKSHAK-NET requires GPS coordinates to dispatch rescue units.',
-          code: LocationErrorCode.permissionDenied,
+          'GPS location service is disabled on this device. Please turn on Location in system settings.',
+          code: LocationErrorCode.serviceDisabled,
         );
       }
-    }
 
-    if (permission == LocationPermission.deniedForever) {
-      throw const LocationException(
-        'Location permission is permanently denied. Please enable Location in App Settings.',
-        code: LocationErrorCode.permissionDeniedForever,
-      );
-    }
+      // 2. Verify permission status
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          if (kIsWeb) return _generateSimulatedLocation();
+          throw const LocationException(
+            'Location permission was denied. RAKSHAK-NET requires GPS coordinates to dispatch rescue units.',
+            code: LocationErrorCode.permissionDenied,
+          );
+        }
+      }
 
-    // 3. Acquire high-accuracy real GPS fix
-    try {
+      if (permission == LocationPermission.deniedForever) {
+        if (kIsWeb) return _generateSimulatedLocation();
+        throw const LocationException(
+          'Location permission is permanently denied. Please enable Location in App Settings.',
+          code: LocationErrorCode.permissionDeniedForever,
+        );
+      }
+
+      // 3. Acquire high-accuracy real GPS fix
       final position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
-        timeLimit: const Duration(seconds: 12),
+        timeLimit: const Duration(seconds: 4),
       );
 
       return LocationData(
@@ -118,31 +113,25 @@ class LocationService {
         timestamp: position.timestamp,
         isSimulated: position.isMocked,
       );
-    } on TimeoutException {
-      // Try fetching last known position as fallback if live fix timed out
-      final lastKnown = await Geolocator.getLastKnownPosition();
-      if (lastKnown != null) {
-        return LocationData(
-          latitude: lastKnown.latitude,
-          longitude: lastKnown.longitude,
-          accuracy: lastKnown.accuracy,
-          altitude: lastKnown.altitude,
-          speed: lastKnown.speed,
-          heading: lastKnown.heading,
-          timestamp: lastKnown.timestamp,
-          isSimulated: lastKnown.isMocked,
-        );
-      }
-      throw const LocationException(
-        'GPS satellite lock timed out. Ensure you have clear line-of-sight to the sky or retry.',
-        code: LocationErrorCode.timeout,
-      );
     } catch (e) {
-      throw LocationException(
-        'Failed to acquire GPS fix: ${e.toString()}',
-        code: LocationErrorCode.unknown,
-      );
+      // Fallback gracefully to simulated/default GPS fix on web/simulators
+      if (kIsWeb) {
+        return _generateSimulatedLocation();
+      }
+      rethrow;
     }
+  }
+
+  LocationData _generateSimulatedLocation() {
+    return LocationData(
+      latitude: 28.6139 + (DateTime.now().millisecond % 30) * 0.0001,
+      longitude: 77.2090 + (DateTime.now().second % 30) * 0.0001,
+      accuracy: 4.5,
+      altitude: 216.0,
+      heading: 0.0,
+      timestamp: DateTime.now(),
+      isSimulated: true,
+    );
   }
 
   /// Provides a real-time stream of live GPS location updates as the user moves.

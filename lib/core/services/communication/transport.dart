@@ -1,9 +1,10 @@
 import '../../../features/sos/domain/entities/sos_request.dart';
 
 enum CommunicationMode {
-  hybrid('HYBRID (LoRa + Cloud)'),
-  loraOnly('LoRa MESH ONLY (Offline)'),
-  internetOnly('INTERNET ONLY (Cloud)');
+  hybrid('SMART AUTO-FAILOVER (Cloud + BLE Mesh)'),
+  meshOnly('BLE MESH ONLY (Offline Multi-Hop)'),
+  loraOnly('LoRa MESH ONLY (Hardware Radio)'),
+  internetOnly('INTERNET ONLY (Cloud Firestore)');
 
   final String label;
   const CommunicationMode(this.label);
@@ -11,7 +12,8 @@ enum CommunicationMode {
 
 enum TransportType {
   internet('Internet / Cloud Firestore'),
-  loraMesh('LoRa Mesh (Hardware)');
+  bleMesh('BLE Mobile Mesh (Zero Internet Multi-Hop)'),
+  loraMesh('LoRa Mesh (Hardware Radio)');
 
   final String displayName;
   const TransportType(this.displayName);

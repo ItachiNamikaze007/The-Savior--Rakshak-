@@ -10,7 +10,6 @@ plugins {
 android {
     namespace = "com.sosquad.rakshaknet"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

@@ -21,7 +21,7 @@ void main() {
     repository.dispose();
   });
 
-  test('CommunicationManager dispatches through active Internet transport and queues offline if needed', () async {
+  test('CommunicationManager dispatches through active Internet and falls back to BLE Mesh when offline', () async {
     final req = SosRequest(
       sosId: 'RAK-COMM-001',
       timestamp: DateTime.now(),
@@ -33,17 +33,17 @@ void main() {
       status: SosStatus.pending,
     );
 
-    // Initial state: Internet active, LoRa pending hardware
+    // Initial state: Internet active, BLE Mesh active
     expect(manager.isInternetAvailable, isTrue);
-    expect(manager.isLoraAvailable, isFalse);
+    expect(manager.isBleMeshAvailable, isTrue);
     expect(manager.mode, equals(CommunicationMode.hybrid));
 
-    // Dispatch SOS
+    // Dispatch SOS online
     final success = await manager.dispatchEmergencySignal(req);
     expect(success, isTrue);
     expect(manager.queuedMessagesCount, equals(0));
 
-    // When offline, enqueues to offline message queue
+    // Simulate Internet drop -> BLE Mesh auto-failover
     manager.internetTransport.setOnlineStatus(false);
     expect(manager.isInternetAvailable, isFalse);
 
@@ -59,9 +59,18 @@ void main() {
     );
 
     final offlineResult = await manager.dispatchEmergencySignal(req2);
-    expect(offlineResult, isFalse);
+    // Transmitted through BLE Mesh
+    expect(offlineResult, isTrue);
+    expect(manager.bleMeshTransport.statistics.txPackets, greaterThanOrEqualTo(1));
+
+    // Stored in offline DTN queue for cloud sync
     expect(manager.queuedMessagesCount, equals(1));
     expect(manager.offlineQueue.pendingMessages.first.id, equals('RAK-COMM-002'));
     expect(manager.offlineQueue.pendingMessages.first.priority, equals(MessagePriority.critical));
+
+    // Reconnection -> Automatically flush queue to repository
+    manager.internetTransport.setOnlineStatus(true);
+    await Future.delayed(const Duration(milliseconds: 100));
+    expect(manager.queuedMessagesCount, equals(0));
   });
 }
